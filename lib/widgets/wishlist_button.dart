@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wow_shopping/app/assets.dart';
 import 'package:wow_shopping/app/theme.dart';
 import 'package:wow_shopping/backend/backend.dart';
+import 'package:wow_shopping/features/wishlist/cubit/wishlist_cubit.dart';
 import 'package:wow_shopping/models/product_item.dart';
 import 'package:wow_shopping/widgets/app_icon.dart';
 
 @immutable
-class WishlistButton extends StatefulWidget {
+class WishlistButton extends StatelessWidget {
   const WishlistButton({
     super.key,
     required this.item,
@@ -15,32 +17,42 @@ class WishlistButton extends StatefulWidget {
   final ProductItem item;
 
   @override
-  State<WishlistButton> createState() => _WishlistButtonState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => WishlistCubit(context.wishlistRepo),
+      child: WishlistButtonContent(item: item),
+    );
+  }
 }
 
-class _WishlistButtonState extends State<WishlistButton> {
-  void _onTogglePressed(bool value) {
-    if (value) {
-      wishlistRepo.addToWishlist(widget.item.id);
-    } else {
-      wishlistRepo.removeToWishlist(widget.item.id);
-    }
-  }
+class WishlistButtonContent extends StatelessWidget {
+  const WishlistButtonContent({
+    super.key,
+    required this.item,
+  });
+
+  final ProductItem item;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-      initialData: wishlistRepo.isInWishlist(widget.item),
-      stream: wishlistRepo.streamIsInWishlist(widget.item),
-      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        final value = snapshot.requireData;
+    void onTogglePressed(bool inWishlist) {
+      if (inWishlist) {
+        context.read<WishlistCubit>().addItem(item);
+      } else {
+        context.read<WishlistCubit>().removeItem(item);
+      }
+    }
+
+    return BlocBuilder<WishlistCubit, WishlistState>(
+      builder: (context, state) {
+        final inWishlist = (state as WishlistPopulated).inWishlist(item);
         return IconButton(
-          onPressed: () => _onTogglePressed(!value),
+          onPressed: () => onTogglePressed(!inWishlist),
           icon: AppIcon(
-            iconAsset: value //
+            iconAsset: inWishlist 
                 ? Assets.iconHeartFilled
                 : Assets.iconHeartEmpty,
-            color: value //
+            color: inWishlist 
                 ? AppTheme.of(context).appColor
                 : const Color(0xFFD0D0D0),
           ),
