@@ -6,7 +6,7 @@ import 'package:wow_shopping/widgets/common.dart';
 import 'package:wow_shopping/widgets/content_heading.dart';
 import 'package:wow_shopping/widgets/product_card.dart';
 import 'package:wow_shopping/widgets/sliver_expansion_tile.dart';
-import 'package:wow_shopping/widgets/wishlist_button.dart';
+import 'package:wow_shopping/widgets/wishlist_button/wishlist_button.dart';
 import 'package:wow_shopping/backend/backend.dart';
 
 @immutable

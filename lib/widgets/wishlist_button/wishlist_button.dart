@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wow_shopping/app/assets.dart';
 import 'package:wow_shopping/app/theme.dart';
 import 'package:wow_shopping/backend/backend.dart';
-import 'package:wow_shopping/features/wishlist/cubit/wishlist_cubit.dart';
+
 import 'package:wow_shopping/models/product_item.dart';
 import 'package:wow_shopping/widgets/app_icon.dart';
+import 'package:wow_shopping/widgets/wishlist_button/cubit/wishlist_cubit.dart';
+
+
 
 @immutable
 class WishlistButton extends StatelessWidget {

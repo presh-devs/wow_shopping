@@ -3,7 +3,7 @@ import 'package:wow_shopping/app/theme.dart';
 import 'package:wow_shopping/features/product_details/product_page.dart';
 import 'package:wow_shopping/models/product_item.dart';
 import 'package:wow_shopping/widgets/common.dart';
-import 'package:wow_shopping/widgets/wishlist_button.dart';
+import 'package:wow_shopping/widgets/wishlist_button/wishlist_button.dart';
 
 @immutable
 class ProductCard extends StatelessWidget {

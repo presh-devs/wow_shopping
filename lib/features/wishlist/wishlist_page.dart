@@ -3,9 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wow_shopping/app/assets.dart';
 import 'package:wow_shopping/app/theme.dart';
 import 'package:wow_shopping/backend/backend.dart';
-import 'package:wow_shopping/features/wishlist/cubit/wishlist_cubit.dart';
+import 'package:wow_shopping/features/wishlist/cubit/wishlist_page_cubit.dart';
 import 'package:wow_shopping/features/wishlist/widgets/wishlist_item.dart';
-import 'package:wow_shopping/models/product_item.dart';
 import 'package:wow_shopping/widgets/app_button.dart';
 import 'package:wow_shopping/widgets/common.dart';
 import 'package:wow_shopping/widgets/top_nav_bar.dart';
@@ -17,7 +16,7 @@ class WishlistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WishlistCubit(context.wishlistRepo),
+      create: (context) => WishlistPageCubit(context.wishlistRepo),
       child: const WishlistPageContent(),
     );
   }
@@ -30,9 +29,8 @@ class WishlistPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WishlistCubit, WishlistState>(
+    return BlocBuilder<WishlistPageCubit, WishlistPageState>(
       builder: (context, state) {
-  
         return SizedBox.expand(
           child: Material(
             child: Column(
@@ -43,8 +41,8 @@ class WishlistPageContent extends StatelessWidget {
                   actions: [
                     TextButton(
                       onPressed: () => context
-                          .read<WishlistCubit>()
-                          .toggleSelectAll( (state as WishlistPopulated).selectedItems!),
+                          .read<WishlistPageCubit>()
+                          .toggleSelectAll(),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
                       ),
@@ -63,22 +61,20 @@ class WishlistPageContent extends StatelessWidget {
                       itemBuilder: (BuildContext context, int index) {
                         final item =
                             context.wishlistRepo.currentWishlistItems[index];
-                        bool selected =
-                            context.read<WishlistCubit>().selectItems(item);
+
                         return Padding(
                           padding: verticalPadding12,
                           child: WishlistItem(
-                            item: item,
-                            onPressed: (item) {
-                              // FIXME: navigate to product details
-                            },
-                            selected: !context
-                                .read<WishlistCubit>()
-                                .selectItems(item),
-                            onToggleSelection: context
-                                .read<WishlistCubit>()
-                                .setSelected(item, selected),
-                          ),
+                              item: item,
+                              onPressed: (item) {
+                                // FIXME: navigate to product details
+                              },
+                              selected: context
+                                  .read<WishlistPageCubit>()
+                                  .selectItems(item),
+                              onToggleSelection: (item, isToggled) => context
+                                  .read<WishlistPageCubit>() //
+                                  .setSelected(item, isToggled)),
                         );
                       },
                     ),
@@ -90,7 +86,7 @@ class WishlistPageContent extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   child: Align(
                     alignment: Alignment.topCenter,
-                    heightFactor:  (state as WishlistPopulated).selectedItems!.isEmpty ? 0.0 : 1.0,
+                    heightFactor: state.selectedItems.isEmpty ? 0.0 : 1.0,
                     child: DecoratedBox(
                       decoration: const BoxDecoration(
                         color: appLightGreyColor,
@@ -105,8 +101,8 @@ class WishlistPageContent extends StatelessWidget {
                             Expanded(
                               child: AppButton(
                                 onPressed: () => context
-                                    .read<WishlistCubit>()
-                                    .removeSelectedItems( (state).selectedItems!),
+                                    .read<WishlistPageCubit>()
+                                    .removeSelectedItems(state.selectedItems),
                                 label: 'Remove',
                                 iconAsset: Assets.iconRemove,
                               ),
@@ -136,26 +132,3 @@ class WishlistPageContent extends StatelessWidget {
     );
   }
 }
-
-// @immutable
-// class WishlistConsumer extends StatelessWidget {
-//   const WishlistConsumer({
-//     super.key,
-//     required this.builder,
-//   });
-
-//   final Widget Function(BuildContext context, List<ProductItem> wishlist)
-//       builder;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder<List<ProductItem>>(
-//       initialData: context.wishlistRepo.currentWishlistItems,
-//       stream: context.wishlistRepo.streamWishlistItems,
-//       builder:
-//           (BuildContext context, AsyncSnapshot<List<ProductItem>> snapshot) {
-//         return builder(context, snapshot.requireData);
-//       },
-//     );
-//   }
-// }
