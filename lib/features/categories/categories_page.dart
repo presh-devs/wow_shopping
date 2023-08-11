@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wow_shopping/app/assets.dart';
+import 'package:wow_shopping/features/categories/cubit/categories_page_cubit.dart';
 import 'package:wow_shopping/widgets/app_icon.dart';
 import 'package:wow_shopping/widgets/category_nav_list.dart';
 import 'package:wow_shopping/widgets/common.dart';
@@ -7,60 +9,75 @@ import 'package:wow_shopping/widgets/sliver_expansion_tile.dart';
 import 'package:wow_shopping/widgets/top_nav_bar.dart';
 
 @immutable
-class CategoriesPage extends StatefulWidget {
+class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
 
-  @override
-  State<CategoriesPage> createState() => _CategoriesPageState();
-}
+//  var _selectedCategory = CategoryItem.global;
 
-class _CategoriesPageState extends State<CategoriesPage> {
-  var _selectedCategory = CategoryItem.global;
-
-  void _onCategoryItemPressed(CategoryItem value) {
-    // FIXME: implement filter or deep link?
-    setState(() {
-      _selectedCategory = value;
-    });
-  }
+//   void _onCategoryItemPressed(CategoryItem value) {
+//     // FIXME: implement filter or deep link?
+//     setState(() {
+//       _selectedCategory = value;
+//     });
+//   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Material(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TopNavBar(
-              title: const Text('Categories'),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    // FIXME: perform search
-                  },
-                  icon: const AppIcon(iconAsset: Assets.iconSearch),
+    return BlocProvider(
+      create: (context) => CategoriesPageCubit(),
+      child: const CategoriesPageContent(),
+    );
+  }
+}
+
+class CategoriesPageContent extends StatelessWidget {
+  const CategoriesPageContent({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<CategoriesPageCubit, CategoriesPageState>(
+      builder: (context, state) {
+        return SizedBox.expand(
+          child: Material(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TopNavBar(
+                  title: const Text('Categories'),
+                  actions: [
+                    IconButton(
+                      onPressed: () {
+                        // FIXME: perform search
+                      },
+                      icon: const AppIcon(iconAsset: Assets.iconSearch),
+                    ),
+                  ],
+                  bottom: CategoryNavList(
+                    selected: state.selectedCategory,
+                    onCategoryItemPressed: (value) => context
+                        .read<CategoriesPageCubit>()
+                        .onCategoryItemPressed(value),
+                  ),
+                ),
+                Expanded(
+                  child: SliverExpansionTileHost(
+                    child: CustomScrollView(
+                      slivers: [
+                        for (final item in CategoryItem.values) ...[
+                          SliverCategoryHeader(item: item),
+                          SliverCategoryContent(item: item),
+                        ],
+                      ],
+                    ),
+                  ),
                 ),
               ],
-              bottom: CategoryNavList(
-                selected: _selectedCategory,
-                onCategoryItemPressed: _onCategoryItemPressed,
-              ),
             ),
-            Expanded(
-              child: SliverExpansionTileHost(
-                child: CustomScrollView(
-                  slivers: [
-                    for (final item in CategoryItem.values) ...[
-                      SliverCategoryHeader(item: item),
-                      SliverCategoryContent(item: item),
-                    ],
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
