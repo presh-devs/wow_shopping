@@ -10,8 +10,6 @@ export 'package:wow_shopping/models/nav_item.dart';
 class MainScreen extends ConsumerWidget {
   const MainScreen({super.key});
 
-
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(bottomNavbarProvider);

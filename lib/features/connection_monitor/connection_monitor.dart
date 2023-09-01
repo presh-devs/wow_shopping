@@ -1,16 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wow_shopping/features/connection_monitor/providers/connection_monitor_providers.dart';
 import 'package:wow_shopping/widgets/common.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-
-final connectivityProvider = FutureProvider<Connectivity>((ref) {
-  final connectivity = Connectivity();
-  return connectivity;
-});
-
-final connectivityStreamProvider = StreamProvider<ConnectivityResult>((ref) {
-  return ref.read(connectivityProvider).value!.onConnectivityChanged;
-});
 
 @immutable
 class ConnectionMonitor extends ConsumerWidget {
@@ -64,7 +56,7 @@ class ConnectionMonitor extends ConsumerWidget {
           error: (error, stackTrace) {
             return emptyWidget;
           },
-          loading: () => CircularProgressIndicator(),
+          loading: () => emptyWidget,
         );
       },
       error: (error, stackTrace) {
