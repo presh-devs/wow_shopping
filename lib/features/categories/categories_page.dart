@@ -12,15 +12,6 @@ import 'package:wow_shopping/widgets/top_nav_bar.dart';
 class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
 
-//  var _selectedCategory = CategoryItem.global;
-
-//   void _onCategoryItemPressed(CategoryItem value) {
-//     // FIXME: implement filter or deep link?
-//     setState(() {
-//       _selectedCategory = value;
-//     });
-//   }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -93,24 +84,25 @@ class SliverCategoryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverExpansionTileHeader(
-      section: item.name,
-      builder: (BuildContext context, String section, bool expanded) {
-        return Padding(
-          padding: horizontalPadding24 + verticalPadding16,
-          child: Row(
-            children: [
-              AppIcon(iconAsset: item.iconAsset),
-              horizontalMargin16,
-              Text(item.title),
-              horizontalMargin16,
-              const Spacer(),
-              ExpansionTileChevron(section: item.name),
-            ],
-          ),
+        return SliverExpansionTileHeader(
+          section: item.name,
+          builder: (BuildContext context, String section, bool expanded) {
+            return Padding(
+              padding: horizontalPadding24 + verticalPadding16,
+              child: Row(
+                children: [
+                  AppIcon(iconAsset: item.iconAsset),
+                  horizontalMargin16,
+                  Text(item.title),
+                  horizontalMargin16,
+                  const Spacer(),
+                  ExpansionTileChevron(section: item.name),
+                ],
+              ),
+            );
+          },
         );
-      },
-    );
+      
   }
 }
 
