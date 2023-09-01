@@ -1,41 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wow_shopping/widgets/common.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+final connectivityProvider = FutureProvider<Connectivity>((ref) {
+  final connectivity = Connectivity();
+  return connectivity;
+});
+
+final connectivityStreamProvider = StreamProvider<ConnectivityResult>((ref) {
+  return ref.read(connectivityProvider).value!.onConnectivityChanged;
+});
+
 @immutable
-class ConnectionMonitor extends StatefulWidget {
+class ConnectionMonitor extends ConsumerWidget {
   const ConnectionMonitor({
     super.key,
     required this.child,
   });
-
   final Widget child;
 
   @override
-  State<ConnectionMonitor> createState() => _ConnectionMonitorState();
-}
-
-class _ConnectionMonitorState extends State<ConnectionMonitor> {
-  final connectivity = Connectivity();
-  late final checkConnectivity = connectivity.checkConnectivity();
-  late final onConnectivityChanged = connectivity.onConnectivityChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: checkConnectivity,
-      builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return emptyWidget;
-        }
-        return StreamBuilder(
-          initialData: snapshot.requireData,
-          stream: onConnectivityChanged,
-          builder: (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
-            final result = snapshot.requireData;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectivity = ref.watch(connectivityProvider);
+    final connectivityStream = ref.watch(connectivityStreamProvider);
+    return connectivity.when(
+      data: (data) {
+        return connectivityStream.when(
+          data: (data) {
+            final result = connectivityStream.value;
             return Stack(
               children: [
-                widget.child,
+                child,
                 Positioned(
                   bottom: 0.0,
                   left: 0.0,
@@ -46,7 +42,8 @@ class _ConnectionMonitorState extends State<ConnectionMonitor> {
                     alignment: Alignment.topCenter,
                     child: Align(
                       alignment: Alignment.topCenter,
-                      heightFactor: result != ConnectivityResult.none ? 0.0 : 1.0,
+                      heightFactor:
+                          result != ConnectivityResult.none ? 0.0 : 1.0,
                       child: Material(
                         color: Colors.red,
                         child: Padding(
@@ -64,8 +61,16 @@ class _ConnectionMonitorState extends State<ConnectionMonitor> {
               ],
             );
           },
+          error: (error, stackTrace) {
+            return emptyWidget;
+          },
+          loading: () => CircularProgressIndicator(),
         );
       },
+      error: (error, stackTrace) {
+        return emptyWidget;
+      },
+      loading: () => emptyWidget,
     );
   }
 }
