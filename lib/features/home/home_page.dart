@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wow_shopping/app/assets.dart';
+import 'package:wow_shopping/features/categories/cubit/categories_page_cubit.dart';
 import 'package:wow_shopping/features/home/top_selling/top_selling.dart';
 import 'package:wow_shopping/features/home/widgets/promo_carousel.dart';
 import 'package:wow_shopping/features/main/cubit/main_cubit.dart';
@@ -39,28 +40,35 @@ class _HomePageState extends State<HomePage> {
       child: Material(
         child: Column(
           children: [
-            TopNavBar(
-              title: Padding(
-                padding: verticalPadding8,
-                child: SvgPicture.asset(Assets.logo),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    // FIXME: implement filter
-                  },
-                  icon: const AppIcon(iconAsset: Assets.iconFilter),
-                ),
-                IconButton(
-                  onPressed: () {
-                    // FIXME: implement search
-                  },
-                  icon: const AppIcon(iconAsset: Assets.iconSearch),
-                ),
-              ],
-              bottom: CategoryNavList(
-                onCategoryItemPressed: _onCategoryItemPressed,
-              ),
+            BlocBuilder<CategoriesPageCubit, CategoriesPageState>(
+              builder: (context, state) {
+                return TopNavBar(
+                  title: Padding(
+                    padding: verticalPadding8,
+                    child: SvgPicture.asset(Assets.logo),
+                  ),
+                  actions: [
+                    IconButton(
+                      onPressed: () {
+                        // FIXME: implement filter
+                      },
+                      icon: const AppIcon(iconAsset: Assets.iconFilter),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        // FIXME: implement search
+                      },
+                      icon: const AppIcon(iconAsset: Assets.iconSearch),
+                    ),
+                  ],
+                  bottom: CategoryNavList(
+                    selected: state.selectedCategory,
+                    onCategoryItemPressed: (value) => context
+                        .read<CategoriesPageCubit>()
+                        .onCategoryItemPressed(value),
+                  ),
+                );
+              },
             ),
             Expanded(
               child: CustomScrollView(

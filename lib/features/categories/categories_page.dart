@@ -75,6 +75,7 @@ class CategoriesPageContent extends StatelessWidget {
 
 @immutable
 class SliverCategoryHeader extends StatelessWidget {
+  
   const SliverCategoryHeader({
     super.key,
     required this.item,

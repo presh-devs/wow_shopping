@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wow_shopping/features/categories/cubit/categories_page_cubit.dart';
 import 'package:wow_shopping/features/connection_monitor/connection_monitor.dart';
 import 'package:wow_shopping/features/main/widgets/bottom_nav_bar.dart';
 
@@ -13,8 +14,15 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => MainCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => MainCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CategoriesPageCubit(),
+        ),
+      ],
       child: const MainView(),
     );
   }
