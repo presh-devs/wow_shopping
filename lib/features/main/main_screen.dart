@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:watch_it/watch_it.dart';
 import 'package:wow_shopping/features/connection_monitor/connection_monitor.dart';
-import 'package:wow_shopping/features/main/widgets/bottom_nav_bar.dart';
+import 'package:wow_shopping/features/main/widgets/bottom_nav_bar/bottom_nav_bar.dart';
+import 'package:wow_shopping/features/main/widgets/bottom_nav_bar/manager/bottom_nav_bar_manager.dart';
 import 'package:wow_shopping/shared/command_error_filters.dart';
 
 export 'package:wow_shopping/features/main/nav_item.dart';
@@ -19,14 +20,10 @@ class MainScreen extends StatefulWidget with WatchItStatefulWidgetMixin {
 }
 
 class MainScreenState extends State<MainScreen> {
-  NavItem _selected = NavItem.home;
-
-  void gotoSection(NavItem item) {
-    setState(() => _selected = item);
-  }
 
   @override
   Widget build(BuildContext context) {
+    final selectedNavBarValue =  watch(di<NavbarManager>()).selectedItem; 
     registerHandler(
       select: (InteractionManager m) => m.lastMessage,
       handler: (context, newValue, cancel) => showDialog(
@@ -53,7 +50,7 @@ class MainScreenState extends State<MainScreen> {
             Expanded(
               child: ConnectionMonitor(
                 child: IndexedStack(
-                  index: _selected.index,
+                  index: selectedNavBarValue.index,
                   children: [
                     for (final item in NavItem.values) //
                       item.builder(),
@@ -62,8 +59,8 @@ class MainScreenState extends State<MainScreen> {
               ),
             ),
             BottomNavBar(
-              onNavItemPressed: gotoSection,
-              selected: _selected,
+              onNavItemPressed: di<NavbarManager>().gotoSectionCommand,
+              selected: selectedNavBarValue,
             ),
           ],
         ),
