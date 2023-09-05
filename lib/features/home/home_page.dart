@@ -13,6 +13,8 @@ import 'package:wow_shopping/shared/widgets/common.dart';
 import 'package:wow_shopping/shared/widgets/content_heading.dart';
 import 'package:wow_shopping/shared/widgets/top_nav_bar.dart';
 
+import '../main/widgets/bottom_nav_bar/manager/bottom_nav_bar_manager.dart';
+
 @immutable
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,9 +31,9 @@ class _HomePageState extends State<HomePage> {
   void _onPromoPressed(PromoModel promo) {
     // FIXME: demo of gotoSection
     if (promo.asset == Assets.promo1) {
-      MainScreen.of(context).gotoSection(NavItem.wishlist);
+      di<NavbarManager>().gotoSectionCommand(NavItem.wishlist);
     } else if (promo.asset == Assets.promo2) {
-      MainScreen.of(context).gotoSection(NavItem.cart);
+     di<NavbarManager>().gotoSectionCommand(NavItem.cart);
     }
   }
 
@@ -75,7 +77,7 @@ class _HomePageState extends State<HomePage> {
                         PromoModel(asset: Assets.promo1),
                         PromoModel(asset: Assets.promo2),
                       ],
-                      onPromoPressed: _onPromoPressed,
+                      onPromoPressed: (_onPromoPressed){},
                     ),
                   ),
                   const SliverTopSelling(),
